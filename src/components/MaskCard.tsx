@@ -18,12 +18,25 @@ interface MaskCardProps {
     description: string;
     aqiRange: string;
     color: string;
+    image?: string;
+    price?: string;
   };
 }
 
 export const MaskCard = ({ mask }: MaskCardProps) => {
   return (
-    <Card className="p-6 hover:shadow-lg transition-all duration-300 hover:scale-105">
+    <Card className="p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer">
+      {/* Mask Image */}
+      {mask.image && (
+        <div className="mb-4 overflow-hidden rounded-lg">
+          <img 
+            src={mask.image} 
+            alt={mask.type}
+            className="w-full h-48 object-cover hover:scale-110 transition-transform duration-300"
+          />
+        </div>
+      )}
+
       {/* Header */}
       <div className={`p-4 rounded-lg bg-gradient-to-r ${mask.color} text-white mb-4`}>
         <div className="flex items-center justify-between">
@@ -31,6 +44,9 @@ export const MaskCard = ({ mask }: MaskCardProps) => {
           <Shield className="h-6 w-6" />
         </div>
         <p className="text-sm opacity-90 mt-1">{mask.description}</p>
+        {mask.price && (
+          <p className="text-sm font-semibold mt-2">Price: {mask.price}</p>
+        )}
       </div>
 
       {/* Protection Level */}
@@ -60,11 +76,16 @@ export const MaskCard = ({ mask }: MaskCardProps) => {
       <div className="mb-4">
         <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Best For:</h4>
         <div className="flex flex-wrap gap-1">
-          {mask.bestFor.map((use, index) => (
+          {mask.bestFor.slice(0, 3).map((use, index) => (
             <Badge key={index} variant="secondary" className="text-xs">
               {use}
             </Badge>
           ))}
+          {mask.bestFor.length > 3 && (
+            <Badge variant="outline" className="text-xs">
+              +{mask.bestFor.length - 3} more
+            </Badge>
+          )}
         </div>
       </div>
 
@@ -78,28 +99,11 @@ export const MaskCard = ({ mask }: MaskCardProps) => {
         </div>
       </div>
 
-      {/* When Not to Use */}
-      <div className="mb-4">
-        <div className="flex items-center gap-2 mb-2">
-          <AlertTriangle className="h-4 w-4 text-red-500" />
-          <h4 className="text-sm font-semibold text-red-700 dark:text-red-300">When NOT to use:</h4>
-        </div>
-        <ul className="text-xs text-red-600 dark:text-red-400 space-y-1">
-          {mask.whenNotToUse.map((item, index) => (
-            <li key={index} className="flex items-center gap-1">
-              <span className="w-1 h-1 bg-red-500 rounded-full"></span>
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Technical Details */}
-      <div className="text-xs text-gray-500 dark:text-gray-400 pt-3 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex justify-between">
-          <span>Layers: {mask.layers}</span>
-          <span>Breathability: {mask.breathability}/5</span>
-        </div>
+      {/* Click to view more */}
+      <div className="text-center pt-2 border-t border-gray-200 dark:border-gray-700">
+        <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+          Click to view detailed information
+        </span>
       </div>
     </Card>
   );
