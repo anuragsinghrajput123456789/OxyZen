@@ -1,5 +1,5 @@
 
-import { Info, AlertTriangle, CheckCircle, XCircle, Heart, Lungs } from 'lucide-react';
+import { Info, AlertTriangle, CheckCircle, XCircle, Heart } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -208,7 +208,7 @@ const AQIInfoPage = () => {
                     
                     <div>
                       <h4 className="font-semibold text-red-600 dark:text-red-400 mb-2 flex items-center gap-2">
-                        <Lungs className="h-4 w-4" />
+                        <Heart className="h-4 w-4" />
                         Health Effects:
                       </h4>
                       <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
@@ -242,7 +242,7 @@ const AQIInfoPage = () => {
           
           <div className="space-y-2">
             <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
-              <Lungs className="h-6 w-6 text-white" />
+              <Heart className="h-6 w-6 text-white" />
             </div>
             <h3 className="font-semibold text-gray-900 dark:text-white">Protect Yourself</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300">Use appropriate masks when needed</p>
