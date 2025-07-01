@@ -1,8 +1,7 @@
 
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Shield, Menu, X, Wind, Info, Activity, Heart, Bot } from 'lucide-react';
-import { useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { ChatBot } from './ChatBot';
 
@@ -12,7 +11,36 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isChatBotOpen, setIsChatBotOpen] = useState(false);
+  const [theme, setTheme] = useState('light');
   const location = useLocation();
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const initialTheme = savedTheme || systemTheme;
+    setTheme(initialTheme);
+    
+    // Apply theme to document
+    if (initialTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   const navigation = [
     { name: 'Home', href: '/', icon: Shield },
@@ -69,7 +97,16 @@ export const Layout = ({ children }: LayoutProps) => {
 
             {/* Right side actions */}
             <div className="flex items-center space-x-3">
-              <ThemeToggle />
+              <ThemeToggle theme={theme} onToggle={toggleTheme} />
+              
+              {/* ChatBot Toggle Button */}
+              <button
+                onClick={() => setIsChatBotOpen(true)}
+                className="p-2 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:scale-110"
+                title="Open AI Assistant"
+              >
+                <Bot className="h-5 w-5" />
+              </button>
               
               {/* Mobile menu button */}
               <button
@@ -114,8 +151,10 @@ export const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
 
-      {/* Floating ChatBot */}
-      <ChatBot />
+      {/* Conditional ChatBot */}
+      {isChatBotOpen && (
+        <ChatBot onClose={() => setIsChatBotOpen(false)} />
+      )}
 
       {/* Footer */}
       <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
