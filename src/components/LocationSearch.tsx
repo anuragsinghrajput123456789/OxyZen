@@ -26,8 +26,8 @@ export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, set
     try {
       console.log('Searching for location:', searchInput);
       
-      // First get coordinates from geocoding
-      const geoResponse = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(searchInput)}&limit=1&appid=${AQI_API_KEY}`);
+      // First get coordinates from geocoding (using HTTPS)
+      const geoResponse = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(searchInput)}&limit=1&appid=${AQI_API_KEY}`);
       const geoData = await geoResponse.json();
       
       if (!geoData || geoData.length === 0) {
@@ -37,8 +37,8 @@ export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, set
       const { lat, lon, name, country } = geoData[0];
       console.log('Coordinates found:', { lat, lon, name, country });
 
-      // Get air quality data
-      const aqiResponse = await fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${AQI_API_KEY}`);
+      // Get air quality data (using HTTPS)
+      const aqiResponse = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${AQI_API_KEY}`);
       const aqiData = await aqiResponse.json();
       
       console.log('AQI API Response:', aqiData);
@@ -83,7 +83,7 @@ export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, set
       console.error('AQI API Error:', error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to fetch air quality data",
+        description: error instanceof Error ? error.message : "Failed to fetch air quality data. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -108,8 +108,8 @@ export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, set
           const { latitude, longitude } = position.coords;
           console.log('Current coordinates:', { latitude, longitude });
           
-          // Get location name from reverse geocoding
-          const geoResponse = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${AQI_API_KEY}`);
+          // Get location name from reverse geocoding (using HTTPS)
+          const geoResponse = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${AQI_API_KEY}`);
           const geoData = await geoResponse.json();
           
           let locationName = 'Current Location';
@@ -117,8 +117,8 @@ export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, set
             locationName = `${geoData[0].name}, ${geoData[0].country}`;
           }
 
-          // Get air quality data
-          const aqiResponse = await fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${AQI_API_KEY}`);
+          // Get air quality data (using HTTPS)
+          const aqiResponse = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${AQI_API_KEY}`);
           const aqiData = await aqiResponse.json();
           
           console.log('Current location AQI data:', aqiData);
