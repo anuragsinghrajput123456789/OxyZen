@@ -17,6 +17,9 @@ interface Message {
   timestamp: Date;
 }
 
+// Your Gemini API key - replace with your actual key
+const GEMINI_API_KEY = 'AIzaSyBJl2xO8mK9NjCvX_example_key_here';
+
 export const ChatBot = ({ onClose }: ChatBotProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -27,21 +30,10 @@ export const ChatBot = ({ onClose }: ChatBotProps) => {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [showApiInput, setShowApiInput] = useState(true);
   const { toast } = useToast();
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
-
-    if (!apiKey && showApiInput) {
-      toast({
-        title: "API Key Required",
-        description: "Please enter your Gemini API key to start chatting.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     const userMessage: Message = {
       role: 'user',
@@ -54,7 +46,7 @@ export const ChatBot = ({ onClose }: ChatBotProps) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +90,7 @@ Keep your response informative but conversational, and always prioritize health 
       console.error('Gemini API Error:', error);
       toast({
         title: "Error",
-        description: "Failed to get AI response. Please check your API key and try again.",
+        description: "Failed to get AI response. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -117,19 +109,7 @@ Keep your response informative but conversational, and always prioritize health 
 
   const handleQuickQuestion = (question: string) => {
     setInput(question);
-    if (apiKey || !showApiInput) {
-      setTimeout(() => sendMessage(), 100);
-    }
-  };
-
-  const handleApiKeySubmit = () => {
-    if (apiKey.trim()) {
-      setShowApiInput(false);
-      toast({
-        title: "API Key Set",
-        description: "You can now start chatting with the AI assistant!",
-      });
-    }
+    setTimeout(() => sendMessage(), 100);
   };
 
   return (
@@ -153,33 +133,6 @@ Keep your response informative but conversational, and always prioritize health 
             <X className="h-5 w-5" />
           </Button>
         </div>
-
-        {/* API Key Input */}
-        {showApiInput && (
-          <div className="p-6 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
-            <div className="space-y-3">
-              <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
-                🔐 Enter your Gemini API key to start chatting:
-              </p>
-              <div className="flex gap-2">
-                <Input
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Your Gemini API key..."
-                  className="flex-1 rounded-xl"
-                  onKeyPress={(e) => e.key === 'Enter' && handleApiKeySubmit()}
-                />
-                <Button onClick={handleApiKeySubmit} className="rounded-xl px-6 bg-blue-600 hover:bg-blue-700">
-                  Set Key
-                </Button>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Your API key is stored locally and only used for this chat session.
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* Messages */}
         <ScrollArea className="flex-1 p-6">
@@ -229,7 +182,6 @@ Keep your response informative but conversational, and always prioritize health 
                     size="sm"
                     onClick={() => handleQuickQuestion(question)}
                     className="text-xs h-auto p-2 text-left rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 transition-all duration-200"
-                    disabled={showApiInput}
                   >
                     {question}
                   </Button>
@@ -244,12 +196,12 @@ Keep your response informative but conversational, and always prioritize health 
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about air quality, masks, or health protection..."
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                disabled={loading || showApiInput}
+                disabled={loading}
                 className="rounded-xl"
               />
               <Button 
                 onClick={sendMessage} 
-                disabled={loading || !input.trim() || showApiInput}
+                disabled={loading || !input.trim()}
                 className="rounded-xl px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 {loading ? (
