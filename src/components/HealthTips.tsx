@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Heart, Loader2, RefreshCw } from 'lucide-react';
+import { Heart, Loader2, RefreshCw, Sparkles, Shield, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -45,7 +45,6 @@ export const HealthTips = ({ aqiData, getAQILevel }: HealthTipsProps) => {
       const data = await response.json();
       const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Unable to generate tips';
       
-      // Parse the AI response into individual tips
       const tipsList = aiText
         .split('\n')
         .filter(line => line.trim().startsWith('-'))
@@ -72,69 +71,116 @@ export const HealthTips = ({ aqiData, getAQILevel }: HealthTipsProps) => {
   const aqiInfo = getAQILevel(aqiData.aqi);
 
   return (
-    <Card className="p-6 h-fit">
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
-            <Heart className="h-6 w-6 text-green-600 dark:text-green-400" />
+    <Card className="overflow-hidden shadow-2xl border-0 bg-gradient-to-br from-white via-green-50 to-blue-50 dark:from-gray-900 dark:via-green-900/10 dark:to-blue-900/10 backdrop-blur-sm animate-fade-in">
+      {/* Header with gradient background */}
+      <div className="relative p-8 bg-gradient-to-r from-green-500 via-blue-500 to-purple-600 text-white overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 animate-float"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12 animate-float animation-delay-2000"></div>
+        <Sparkles className="absolute top-4 right-4 h-6 w-6 text-yellow-300 animate-pulse" />
+        
+        <div className="relative z-10">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm animate-float">
+              <Heart className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold">
+                AI Health Assistant
+              </h3>
+              <p className="text-white/80 flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Personalized wellness guidance
+              </p>
+            </div>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-            AI Health Tips
-          </h3>
-        </div>
 
-        <div className={`p-3 rounded-lg bg-gradient-to-r ${aqiInfo.color} text-white text-sm font-medium`}>
-          Air Quality: {aqiInfo.level} (AQI: {aqiData.aqi})
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${aqiInfo.color} text-white text-sm font-semibold shadow-lg backdrop-blur-sm`}>
+            <Star className="h-4 w-4" />
+            Air Quality: {aqiInfo.level} (AQI: {aqiData.aqi})
+          </div>
         </div>
+      </div>
 
+      <div className="p-8">
         {tips.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Get personalized health and safety tips based on current air quality using AI analysis.
+          <div className="text-center py-12">
+            <div className="w-20 h-20 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-float">
+              <Heart className="h-10 w-10 text-white" />
+            </div>
+            <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              Get Your Personalized Health Tips
+            </h4>
+            <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto leading-relaxed">
+              Receive AI-powered health and safety recommendations tailored to the current air quality in your area.
             </p>
             <Button 
               onClick={generateHealthTips}
               disabled={loading}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              size="lg"
+              className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               {loading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Generating Tips...
+                  <Loader2 className="h-5 w-5 mr-3 animate-spin" />
+                  Generating Your Tips...
                 </>
               ) : (
-                'Get Health Tips'
+                <>
+                  <Sparkles className="h-5 w-5 mr-3" />
+                  Get Personalized Tips
+                </>
               )}
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="space-y-3">
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                Your Health & Safety Guide
+              </h4>
+              <p className="text-gray-600 dark:text-gray-300">
+                AI-generated recommendations for AQI {aqiData.aqi} in {aqiData.location}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
               {tips.map((tip, index) => (
-                <div key={index} className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-900/30 rounded-lg">
-                  <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
+                <div 
+                  key={index} 
+                  className="group flex items-start gap-4 p-5 bg-gradient-to-r from-green-50 via-blue-50 to-purple-50 dark:from-green-900/20 dark:via-blue-900/20 dark:to-purple-900/20 rounded-2xl border border-green-200/50 dark:border-green-800/50 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] animate-fade-in"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl flex items-center justify-center text-sm font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
                     {index + 1}
                   </div>
-                  <p className="text-sm text-green-900 dark:text-green-100 flex-1">
-                    {tip}
-                  </p>
+                  <div className="flex-1">
+                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors duration-300">
+                      {tip}
+                    </p>
+                  </div>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Star className="h-5 w-5 text-yellow-500" />
+                  </div>
                 </div>
               ))}
             </div>
             
-            <Button 
-              onClick={generateHealthTips}
-              disabled={loading}
-              variant="outline"
-              className="w-full flex items-center gap-2"
-            >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-              Refresh Tips
-            </Button>
+            <div className="text-center pt-6 border-t border-gray-200 dark:border-gray-700">
+              <Button 
+                onClick={generateHealthTips}
+                disabled={loading}
+                variant="outline"
+                className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-green-500 hover:to-blue-600 hover:text-white hover:border-transparent transition-all duration-300 hover:scale-105"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+                Generate New Tips
+              </Button>
+            </div>
           </div>
         )}
       </div>

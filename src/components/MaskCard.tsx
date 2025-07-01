@@ -1,5 +1,5 @@
 
-import { Shield, Star, Clock, Users, AlertTriangle, Zap } from 'lucide-react';
+import { Shield, Star, Clock, Users, Zap } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -19,7 +19,8 @@ interface MaskCardProps {
     aqiRange: string;
     color: string;
     image?: string;
-    price?: string;
+    pros?: string[];
+    cons?: string[];
   };
 }
 
@@ -38,12 +39,10 @@ export const MaskCard = ({ mask }: MaskCardProps) => {
           <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm">
             {mask.protection}% Protection
           </div>
-          {/* Price tag */}
-          {mask.price && (
-            <div className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-              {mask.price}
-            </div>
-          )}
+          {/* Quality badge */}
+          <div className="absolute top-4 left-4 bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            Premium Quality
+          </div>
         </div>
       )}
 

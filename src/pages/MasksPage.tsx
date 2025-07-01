@@ -22,7 +22,6 @@ const maskData = [
     aqiRange: '150-300',
     color: 'from-red-500 to-red-700',
     image: '/lovable-uploads/f6fde5c5-a5ad-4a11-9d17-a30de37d7420.png',
-    price: '$15-25',
     pros: ['High filtration efficiency', 'FDA approved', 'Reliable seal'],
     cons: ['Single use only', 'Can be uncomfortable', 'More expensive']
   },
@@ -40,7 +39,6 @@ const maskData = [
     aqiRange: '200+',
     color: 'from-purple-600 to-black',
     image: '/lovable-uploads/00895ed5-d04c-4600-bda8-d7fdde4b67d7.png',
-    price: '$25-40',
     pros: ['Maximum protection', 'Industrial grade', 'Chemical resistant'],
     cons: ['Very expensive', 'Hard to breathe', 'Bulky design']
   },
@@ -58,7 +56,6 @@ const maskData = [
     aqiRange: '100-200',
     color: 'from-orange-500 to-red-500',
     image: '/lovable-uploads/ba194f65-df63-4c3d-beb0-749b33069328.png',
-    price: '$8-15',
     pros: ['Good protection', 'Comfortable fit', 'Affordable'],
     cons: ['Ear loops may break', 'Variable quality', 'Not FDA approved']
   },
@@ -76,7 +73,6 @@ const maskData = [
     aqiRange: '50-100',
     color: 'from-blue-400 to-blue-600',
     image: '/lovable-uploads/3aaf7af0-e6c3-40b6-bbb7-d52a8e1340a9.png',
-    price: '$5-10',
     pros: ['Very comfortable', 'Easy to breathe', 'Widely available'],
     cons: ['Limited protection', 'Loose fit', 'Single use only']
   },
@@ -94,7 +90,6 @@ const maskData = [
     aqiRange: '0-50',
     color: 'from-green-400 to-green-600',
     image: '/lovable-uploads/cb37434f-9bf7-45d8-853d-7505352d4802.png',
-    price: '$3-8',
     pros: ['Reusable', 'Eco-friendly', 'Customizable'],
     cons: ['Limited protection', 'Needs regular washing', 'Variable quality']
   },
@@ -112,9 +107,8 @@ const maskData = [
     aqiRange: '100-300',
     color: 'from-indigo-500 to-purple-600',
     image: '/lovable-uploads/7b79a71d-6b9a-4fb2-bf4e-981dfab1f721.png',
-    price: '$80-150',
     pros: ['Smart features', 'High protection', 'Comfortable for long use'],
-    cons: ['Expensive', 'Requires charging', 'Complex maintenance']
+    cons: ['Complex technology', 'Requires maintenance', 'Learning curve']
   }
 ];
 
@@ -139,15 +133,15 @@ const MasksPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
-        <Card className="p-8 mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white shadow-2xl">
+        <Card className="p-8 mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white shadow-2xl animate-fade-in">
           <div className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm animate-float">
                 <Shield className="h-8 w-8 text-white" />
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Mask Collection
+              Protective Mask Collection
             </h1>
             <p className="text-xl opacity-90 max-w-3xl mx-auto leading-relaxed">
               Explore our comprehensive collection of protective masks with detailed information, 
@@ -157,7 +151,7 @@ const MasksPage = () => {
         </Card>
 
         {/* Search and Filter Section */}
-        <Card className="p-6 mb-8 shadow-lg border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm">
+        <Card className="p-6 mb-8 shadow-lg border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm animate-fade-in animation-delay-200">
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -195,7 +189,7 @@ const MasksPage = () => {
         </Card>
 
         {/* Results Counter */}
-        <div className="mb-6">
+        <div className="mb-6 animate-fade-in animation-delay-400">
           <p className="text-lg text-gray-600 dark:text-gray-300">
             Showing {filteredMasks.length} mask{filteredMasks.length !== 1 ? 's' : ''} 
             {selectedFilter !== 'all' && (
@@ -207,12 +201,13 @@ const MasksPage = () => {
         </div>
 
         {/* Mask Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          {filteredMasks.map((mask) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 animate-fade-in animation-delay-600">
+          {filteredMasks.map((mask, index) => (
             <div 
               key={mask.type} 
               onClick={() => setSelectedMask(mask)} 
-              className="cursor-pointer transform hover:scale-105 transition-all duration-300"
+              className="cursor-pointer transform hover:scale-105 transition-all duration-300 animate-fade-in"
+              style={{ animationDelay: `${600 + index * 100}ms` }}
             >
               <MaskCard mask={mask} />
             </div>
@@ -220,8 +215,8 @@ const MasksPage = () => {
         </div>
 
         {filteredMasks.length === 0 && (
-          <Card className="p-12 text-center shadow-lg">
-            <div className="text-6xl mb-4">😷</div>
+          <Card className="p-12 text-center shadow-lg animate-fade-in">
+            <div className="text-6xl mb-4 animate-float">😷</div>
             <h3 className="text-2xl font-semibold mb-2 text-gray-700 dark:text-gray-300">
               No masks found
             </h3>
