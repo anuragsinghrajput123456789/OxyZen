@@ -13,6 +13,8 @@ interface LocationSearchProps {
   setLoading: (loading: boolean) => void;
 }
 
+const AQI_API_KEY = 'c4be273320974f06b606241977fde51a';
+
 export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, setLoading }: LocationSearchProps) => {
   const [searchInput, setSearchInput] = useState('');
   const { toast } = useToast();
@@ -22,29 +24,66 @@ export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, set
     
     setLoading(true);
     try {
-      // Mock API call - in real app would use actual AQI API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('Searching for location:', searchInput);
       
-      const mockAQI = Math.floor(Math.random() * 300) + 1;
-      const aqiData = {
-        aqi: mockAQI,
-        location: searchInput,
-        pm25: Math.floor(Math.random() * 100),
-        pm10: Math.floor(Math.random() * 150),
-        coordinates: { lat: 0, lng: 0 }
+      // First get coordinates from geocoding
+      const geoResponse = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(searchInput)}&limit=1&appid=${AQI_API_KEY}`);
+      const geoData = await geoResponse.json();
+      
+      if (!geoData || geoData.length === 0) {
+        throw new Error('Location not found');
+      }
+
+      const { lat, lon, name, country } = geoData[0];
+      console.log('Coordinates found:', { lat, lon, name, country });
+
+      // Get air quality data
+      const aqiResponse = await fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${AQI_API_KEY}`);
+      const aqiData = await aqiResponse.json();
+      
+      console.log('AQI API Response:', aqiData);
+
+      if (!aqiResponse.ok || !aqiData.list || aqiData.list.length === 0) {
+        throw new Error('Failed to fetch air quality data');
+      }
+
+      const pollution = aqiData.list[0];
+      const components = pollution.components;
+      
+      // Convert OpenWeather AQI (1-5) to standard AQI (0-500)
+      const convertToStandardAQI = (owAqi: number) => {
+        const aqiMap = { 1: 50, 2: 100, 3: 150, 4: 200, 5: 300 };
+        return aqiMap[owAqi as keyof typeof aqiMap] || 150;
+      };
+
+      const processedData = {
+        aqi: convertToStandardAQI(pollution.main.aqi),
+        location: `${name}, ${country}`,
+        pm25: Math.round(components.pm2_5 || 0),
+        pm10: Math.round(components.pm10 || 0),
+        o3: Math.round(components.o3 || 0),
+        no2: Math.round(components.no2 || 0),
+        so2: Math.round(components.so2 || 0),
+        co: Math.round(components.co || 0),
+        coordinates: { lat, lng: lon },
+        timestamp: new Date().toISOString(),
+        owAqi: pollution.main.aqi
       };
       
-      onLocationSelect(searchInput);
-      onAQIDataUpdate(aqiData);
+      console.log('Processed AQI data:', processedData);
+      
+      onLocationSelect(`${name}, ${country}`);
+      onAQIDataUpdate(processedData);
       
       toast({
         title: "Location Updated",
-        description: `Air quality data loaded for ${searchInput}`,
+        description: `Air quality data loaded for ${name}, ${country}`,
       });
     } catch (error) {
+      console.error('AQI API Error:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch air quality data",
+        description: error instanceof Error ? error.message : "Failed to fetch air quality data",
         variant: "destructive",
       });
     } finally {
@@ -67,30 +106,61 @@ export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, set
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
+          console.log('Current coordinates:', { latitude, longitude });
           
-          // Mock reverse geocoding and AQI fetch
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          // Get location name from reverse geocoding
+          const geoResponse = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${AQI_API_KEY}`);
+          const geoData = await geoResponse.json();
           
-          const mockAQI = Math.floor(Math.random() * 300) + 1;
-          const aqiData = {
-            aqi: mockAQI,
-            location: 'Current Location',
-            pm25: Math.floor(Math.random() * 100),
-            pm10: Math.floor(Math.random() * 150),
-            coordinates: { lat: latitude, lng: longitude }
+          let locationName = 'Current Location';
+          if (geoData && geoData.length > 0) {
+            locationName = `${geoData[0].name}, ${geoData[0].country}`;
+          }
+
+          // Get air quality data
+          const aqiResponse = await fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${AQI_API_KEY}`);
+          const aqiData = await aqiResponse.json();
+          
+          console.log('Current location AQI data:', aqiData);
+
+          if (!aqiResponse.ok || !aqiData.list || aqiData.list.length === 0) {
+            throw new Error('Failed to fetch air quality data');
+          }
+
+          const pollution = aqiData.list[0];
+          const components = pollution.components;
+          
+          const convertToStandardAQI = (owAqi: number) => {
+            const aqiMap = { 1: 50, 2: 100, 3: 150, 4: 200, 5: 300 };
+            return aqiMap[owAqi as keyof typeof aqiMap] || 150;
+          };
+
+          const processedData = {
+            aqi: convertToStandardAQI(pollution.main.aqi),
+            location: locationName,
+            pm25: Math.round(components.pm2_5 || 0),
+            pm10: Math.round(components.pm10 || 0),
+            o3: Math.round(components.o3 || 0),
+            no2: Math.round(components.no2 || 0),
+            so2: Math.round(components.so2 || 0),
+            co: Math.round(components.co || 0),
+            coordinates: { lat: latitude, lng: longitude },
+            timestamp: new Date().toISOString(),
+            owAqi: pollution.main.aqi
           };
           
-          onLocationSelect('Current Location');
-          onAQIDataUpdate(aqiData);
+          onLocationSelect(locationName);
+          onAQIDataUpdate(processedData);
           
           toast({
             title: "Location Detected",
-            description: "Air quality data loaded for your current location",
+            description: `Air quality data loaded for ${locationName}`,
           });
         } catch (error) {
+          console.error('Current location AQI error:', error);
           toast({
             title: "Error",
-            description: "Failed to fetch air quality data",
+            description: "Failed to fetch air quality data for current location",
             variant: "destructive",
           });
         } finally {
@@ -98,6 +168,7 @@ export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, set
         }
       },
       (error) => {
+        console.error('Geolocation error:', error);
         setLoading(false);
         toast({
           title: "Location Access Denied",
@@ -120,7 +191,7 @@ export const LocationSearch = ({ onLocationSelect, onAQIDataUpdate, loading, set
           <div className="flex-1">
             <Input
               type="text"
-              placeholder="Enter city name or pincode..."
+              placeholder="Enter city name or location..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && searchLocation()}

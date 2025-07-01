@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Send, Loader2, Bot, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -18,7 +17,7 @@ interface Message {
 }
 
 // Your Gemini API key - replace with your actual key
-const GEMINI_API_KEY = 'AIzaSyBJl2xO8mK9NjCvX_example_key_here';
+const GEMINI_API_KEY = 'c4be273320974f06b606241977fde51a';
 
 export const ChatBot = ({ onClose }: ChatBotProps) => {
   const [messages, setMessages] = useState<Message[]>([
