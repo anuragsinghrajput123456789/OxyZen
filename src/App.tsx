@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import MasksPage from "./pages/MasksPage";
 import AQIInfoPage from "./pages/AQIInfoPage";
 import AQIMonitorPage from "./pages/AQIMonitorPage";
+import MaskRecommendationPage from "./pages/MaskRecommendationPage";
 import TipsPage from "./pages/TipsPage";
 import NotFound from "./pages/NotFound";
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/masks" element={<MasksPage />} />
             <Route path="/aqi-info" element={<AQIInfoPage />} />
             <Route path="/aqi-monitor" element={<AQIMonitorPage />} />
+            <Route path="/mask-recommendation" element={<MaskRecommendationPage />} />
             <Route path="/tips" element={<TipsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
