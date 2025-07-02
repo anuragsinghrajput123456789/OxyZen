@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { X, Send, Loader2, Bot, Sparkles } from 'lucide-react';
+
+import { useState, useRef, useEffect } from 'react';
+import { X, Send, Loader2, Bot, Sparkles, Mic, MicOff } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -23,13 +24,82 @@ export const ChatBot = ({ onClose }: ChatBotProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'ai',
-      content: 'Hello! I\'m your AI Air Quality Assistant. Ask me anything about air pollution, masks, health protection, or AQI levels. How can I help you breathe safer today?',
+      content: 'Hello! I\'m your AI Air Quality Assistant. Ask me anything about air pollution, masks, health protection, or AQI levels. You can type or use voice input by clicking the microphone button. How can I help you breathe safer today?',
       timestamp: new Date()
     }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
   const { toast } = useToast();
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  // Check for speech recognition support
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      setSpeechSupported(true);
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      
+      if (recognitionRef.current) {
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = false;
+        recognitionRef.current.lang = 'en-US';
+
+        recognitionRef.current.onstart = () => {
+          setIsListening(true);
+        };
+
+        recognitionRef.current.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          setInput(transcript);
+          setIsListening(false);
+        };
+
+        recognitionRef.current.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+          toast({
+            title: "Voice Recognition Error",
+            description: "Could not recognize speech. Please try again or use text input.",
+            variant: "destructive",
+          });
+        };
+
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+        };
+      }
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, [toast]);
+
+  const startListening = () => {
+    if (recognitionRef.current && !isListening) {
+      try {
+        recognitionRef.current.start();
+      } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        toast({
+          title: "Voice Recognition Error",
+          description: "Could not start voice recognition. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+    }
+  };
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -124,7 +194,7 @@ Keep your response informative but conversational, and always prioritize health 
               <h3 className="text-xl font-bold">AI Air Quality Assistant</h3>
               <p className="text-blue-100 text-sm flex items-center">
                 <Sparkles className="h-3 w-3 mr-1" />
-                Powered by Gemini AI
+                Powered by Gemini AI • Voice Enabled
               </p>
             </div>
           </div>
@@ -188,19 +258,53 @@ Keep your response informative but conversational, and always prioritize health 
               </div>
             </div>
 
-            {/* Input */}
+            {/* Voice Recognition Status */}
+            {isListening && (
+              <div className="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                <div className="flex items-center justify-center gap-2 text-blue-600 dark:text-blue-400">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium">Listening... Speak now</span>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animation-delay-200"></div>
+                </div>
+              </div>
+            )}
+
+            {/* Input with Voice */}
             <div className="flex gap-2">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about air quality, masks, or health protection..."
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                disabled={loading}
+                disabled={loading || isListening}
                 className="rounded-xl"
               />
+              
+              {/* Voice Recognition Button */}
+              {speechSupported && (
+                <Button
+                  onClick={isListening ? stopListening : startListening}
+                  disabled={loading}
+                  variant="outline"
+                  size="icon"
+                  className={`rounded-xl transition-all duration-200 ${
+                    isListening 
+                      ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30' 
+                      : 'hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700'
+                  }`}
+                  title={isListening ? 'Stop listening' : 'Start voice input'}
+                >
+                  {isListening ? (
+                    <MicOff className="h-4 w-4" />
+                  ) : (
+                    <Mic className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
+              
               <Button 
                 onClick={sendMessage} 
-                disabled={loading || !input.trim()}
+                disabled={loading || !input.trim() || isListening}
                 className="rounded-xl px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 {loading ? (
@@ -210,6 +314,13 @@ Keep your response informative but conversational, and always prioritize health 
                 )}
               </Button>
             </div>
+
+            {/* Voice Support Info */}
+            {!speechSupported && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+                Voice input not supported in this browser
+              </p>
+            )}
           </div>
         )}
       </Card>
