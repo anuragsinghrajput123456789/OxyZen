@@ -146,13 +146,13 @@ const Index = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {features.map((feature, index) => (
-            <Card 
+            <Link 
               key={index} 
-              className="group p-8 text-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 hover:scale-105 cursor-pointer animate-fade-in"
+              to={feature.link}
+              className="group animate-fade-in"
               style={{ animationDelay: `${800 + index * 200}ms` }}
-              asChild
             >
-              <Link to={feature.link}>
+              <Card className="p-8 text-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 hover:scale-105 cursor-pointer h-full">
                 <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
                   <feature.icon className="h-8 w-8 text-white transition-transform duration-300 group-hover:scale-110" />
                 </div>
@@ -162,8 +162,8 @@ const Index = () => {
                 <p className="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
                   {feature.description}
                 </p>
-              </Link>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
 
