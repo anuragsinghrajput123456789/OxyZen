@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { LocationSearch } from '@/components/LocationSearch';
 import { AQIDisplay } from '@/components/AQIDisplay';
 import { AQIPieChart } from '@/components/AQIPieChart';
+import { MaskRecommendation } from '@/components/MaskRecommendation';
 import { Wind, Eye, Activity, MapPin, Zap, Shield, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
@@ -117,12 +118,21 @@ const AQIMonitorPage = () => {
         </div>
       </div>
 
-      {/* AQI Display */}
+      {/* AQI Display with Mask Recommendation */}
       {aqiData && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 animate-fade-in">
           <div className="space-y-12">
             <AQIDisplay aqiData={aqiData} getAQILevel={getAQILevel} />
-            <AQIPieChart aqiData={aqiData} />
+            
+            {/* Mask Recommendation and Pie Chart Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <AQIPieChart aqiData={aqiData} />
+              </div>
+              <div className="lg:col-span-1">
+                <MaskRecommendation aqiData={aqiData} getAQILevel={getAQILevel} />
+              </div>
+            </div>
           </div>
         </div>
       )}

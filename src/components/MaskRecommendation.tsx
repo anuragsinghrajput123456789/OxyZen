@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Shield, Loader2, Download } from 'lucide-react';
+import { Shield, Loader2, Download, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +13,9 @@ interface MaskRecommendationProps {
   getAQILevel: (aqi: number) => any;
 }
 
+// Your Gemini API key
+const GEMINI_API_KEY = 'c4be273320974f06b606241977fde51a';
+
 export const MaskRecommendation = ({ aqiData, getAQILevel }: MaskRecommendationProps) => {
   const [recommendation, setRecommendation] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -21,7 +24,7 @@ export const MaskRecommendation = ({ aqiData, getAQILevel }: MaskRecommendationP
   const getMaskRecommendation = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyC8fekQzgrly17DLFoZKVMpBxl-Z5NW8n8', {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,36 +32,58 @@ export const MaskRecommendation = ({ aqiData, getAQILevel }: MaskRecommendationP
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `Based on an AQI of ${aqiData.aqi} in ${aqiData.location}, recommend the most suitable mask type and explain why. Include:
-              1. Recommended mask type (N95, N99, KN95, Surgical, Cloth)
-              2. Why this specific mask is needed for this AQI level
-              3. Protection level it provides
-              4. Duration of safe usage
-              5. Special considerations for children/elderly
-              Keep the response structured and informative but concise.`
+              text: `Based on an AQI of ${aqiData.aqi} in ${aqiData.location}, provide a comprehensive mask recommendation. Include:
+
+1. **Primary Recommended Mask Type**: Choose from N95, N99, P100, KN95, Surgical, or Cloth mask
+2. **Why This Mask**: Explain why this specific mask is ideal for AQI level ${aqiData.aqi}
+3. **Protection Level**: What percentage of particles it filters
+4. **Usage Duration**: How long it can be safely worn
+5. **Special Considerations**: Any advice for children, elderly, or people with respiratory conditions
+6. **Alternative Options**: Secondary mask recommendations if the primary isn't available
+
+Current AQI Level: ${aqiData.aqi} (${getAQILevel(aqiData.aqi).level})
+Location: ${aqiData.location}
+
+Please provide practical, actionable advice in a structured format. Keep it informative but easy to understand.`
             }]
           }]
         })
       });
 
       const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Failed to get AI response');
+      }
+
       const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Unable to generate recommendation';
+      
+      // Determine primary mask type based on AQI
+      let primaryMask = 'Surgical';
+      if (aqiData.aqi > 300) primaryMask = 'P100';
+      else if (aqiData.aqi > 200) primaryMask = 'N99';
+      else if (aqiData.aqi > 150) primaryMask = 'N95';
+      else if (aqiData.aqi > 100) primaryMask = 'KN95';
+      else if (aqiData.aqi > 50) primaryMask = 'Surgical';
+      else primaryMask = 'None Required';
       
       setRecommendation({
         text: aiText,
-        maskType: aqiData.aqi > 200 ? 'N99' : aqiData.aqi > 150 ? 'N95' : aqiData.aqi > 100 ? 'KN95' : 'Surgical',
+        primaryMask,
         aqi: aqiData.aqi,
-        location: aqiData.location
+        location: aqiData.location,
+        aqiLevel: getAQILevel(aqiData.aqi).level
       });
 
       toast({
-        title: "Recommendation Generated",
-        description: "AI-powered mask recommendation is ready",
+        title: "AI Recommendation Generated",
+        description: "Personalized mask recommendation is ready based on current AQI",
       });
     } catch (error) {
+      console.error('Gemini API Error:', error);
       toast({
         title: "Error",
-        description: "Failed to generate recommendation",
+        description: "Failed to generate AI recommendation. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -70,27 +95,26 @@ export const MaskRecommendation = ({ aqiData, getAQILevel }: MaskRecommendationP
     if (!recommendation) return;
     
     const reportContent = `
-Pollution Mask Recommendation Report
-Generated: ${new Date().toLocaleDateString()}
+🌬️ AI-Powered Mask Recommendation Report
+Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}
 
-Location: ${recommendation.location}
-AQI Level: ${recommendation.aqi}
-Air Quality: ${getAQILevel(recommendation.aqi).level}
+📍 Location: ${recommendation.location}
+📊 AQI Level: ${recommendation.aqi} (${recommendation.aqiLevel})
+🛡️ Recommended Mask: ${recommendation.primaryMask}
 
-Recommended Mask: ${recommendation.maskType}
-
-AI Analysis:
+🤖 AI Analysis:
 ${recommendation.text}
 
 ---
 Generated by Pollution Mask Recommender App
+Powered by Gemini AI
     `;
     
     const blob = new Blob([reportContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `mask-recommendation-${aqiData.location}-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `ai-mask-recommendation-${aqiData.location.replace(/,/g, '')}-${new Date().toISOString().split('T')[0]}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -98,73 +122,95 @@ Generated by Pollution Mask Recommender App
 
     toast({
       title: "Report Downloaded",
-      description: "Your mask recommendation report has been saved",
+      description: "Your AI mask recommendation report has been saved",
     });
   };
 
+  const aqiLevelInfo = getAQILevel(aqiData.aqi);
+
   return (
-    <Card className="p-6 h-fit">
+    <Card className="p-6 h-fit bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-lg">
       <div className="space-y-4">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-            <Shield className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          <div className={`w-12 h-12 bg-gradient-to-r ${aqiLevelInfo.color} rounded-xl flex items-center justify-center shadow-md`}>
+            <Shield className="h-6 w-6 text-white" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-            AI Mask Recommendation
-          </h3>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              AI Mask Recommendation
+              <Sparkles className="h-4 w-4 text-yellow-500" />
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              AQI: {aqiData.aqi} • {aqiLevelInfo.level}
+            </p>
+          </div>
         </div>
 
         {!recommendation ? (
           <div className="text-center py-8">
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Get personalized mask recommendations based on current air quality using AI analysis.
+            <div className="text-4xl mb-4">🎭</div>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              Get personalized mask recommendations based on your location's air quality using advanced AI analysis.
             </p>
             <Button 
               onClick={getMaskRecommendation}
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className={`bg-gradient-to-r ${aqiLevelInfo.color} hover:opacity-90 text-white shadow-lg transition-all duration-300 hover:scale-105`}
             >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Analyzing...
+                  AI Analyzing...
                 </>
               ) : (
-                'Get AI Recommendation'
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Get AI Recommendation
+                </>
               )}
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4">
-              <div className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                Recommended: {recommendation.maskType} Mask
+          <div className="space-y-6">
+            <div className={`bg-gradient-to-r ${aqiLevelInfo.color} rounded-xl p-4 text-white shadow-lg`}>
+              <div className="flex items-center gap-2 mb-2">
+                <Shield className="h-5 w-5" />
+                <span className="font-bold text-lg">
+                  Recommended: {recommendation.primaryMask} Mask
+                </span>
               </div>
-              <div className="text-sm text-blue-700 dark:text-blue-200 whitespace-pre-wrap">
+              <div className="text-sm opacity-90">
+                For AQI {recommendation.aqi} in {recommendation.location}
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
+              <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                 {recommendation.text}
               </div>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button 
                 onClick={getMaskRecommendation}
                 disabled={loading}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 hover:bg-blue-50 dark:hover:bg-blue-900/20"
               >
                 {loading ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
-                  'Refresh Recommendation'
+                  <Sparkles className="h-4 w-4 mr-2" />
                 )}
+                Refresh AI Analysis
               </Button>
               <Button 
                 onClick={downloadReport}
                 variant="outline"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 hover:bg-green-50 dark:hover:bg-green-900/20"
               >
                 <Download className="h-4 w-4" />
-                Download
+                Download Report
               </Button>
             </div>
           </div>
