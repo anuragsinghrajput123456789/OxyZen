@@ -1,8 +1,9 @@
-
 import { Info, AlertTriangle, CheckCircle, Heart, Thermometer, Wind, Factory, Car } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { ZoomModal } from '@/components/ZoomModal';
+import { useState } from 'react';
 
 const aqiLevels = [
   {
@@ -149,188 +150,341 @@ const pollutants = [
 ];
 
 const AQIInfoPage = () => {
+  const [selectedAQILevel, setSelectedAQILevel] = useState<any>(null);
+  const [selectedPollutant, setSelectedPollutant] = useState<any>(null);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Animated Header */}
-        <div className="text-center mb-12 animate-fade-in">
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center animate-bounce">
-              <Info className="h-10 w-10 text-white" />
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Animated Header */}
+          <div className="text-center mb-12 animate-fade-in">
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center animate-bounce">
+                <Info className="h-10 w-10 text-white" />
+              </div>
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                Air Quality Index
+              </span>
+              <br />
+              Complete Guide
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Understanding air quality levels, health implications, and protective measures to keep you safe
+            </p>
+            <div className="flex justify-center mt-6 space-x-4 text-4xl animate-pulse">
+              <span>🌫️</span>
+              <span>📊</span>
+              <span>🛡️</span>
             </div>
           </div>
-          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              Air Quality Index
-            </span>
-            <br />
-            Complete Guide
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Understanding air quality levels, health implications, and protective measures to keep you safe
-          </p>
-          <div className="flex justify-center mt-6 space-x-4 text-4xl animate-pulse">
-            <span>🌫️</span>
-            <span>📊</span>
-            <span>🛡️</span>
-          </div>
-        </div>
 
-        {/* AQI Levels */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-            AQI Levels & Health Impact
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {aqiLevels.map((level, index) => (
-              <Card key={index} className={`overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 ${level.bgColor} ${level.borderColor} border-2 group animate-fade-in`} style={{animationDelay: `${index * 100}ms`}}>
-                <div className={`p-6 bg-gradient-to-r ${level.color} text-white relative overflow-hidden`}>
-                  <div className="absolute top-2 right-2 text-3xl group-hover:animate-bounce">
-                    {level.emoji}
-                  </div>
-                  <h3 className="text-2xl font-bold mb-2">{level.level}</h3>
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg font-semibold">AQI {level.range}</p>
-                    <Progress value={(parseInt(level.range.split('-')[0]) / 300) * 100} className="w-20 h-2 bg-white/30" />
-                  </div>
-                </div>
-                <div className="p-6 space-y-4">
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{level.description}</p>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <h4 className="font-semibold text-red-600 dark:text-red-400 mb-2 flex items-center gap-2">
-                        <Heart className="h-4 w-4" />
-                        Health Effects
-                      </h4>
-                      <p className="text-sm text-gray-700 dark:text-gray-300 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
-                        {level.healthEffects}
-                      </p>
-                    </div>
-
-                    <div>
-                      <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" />
-                        Recommendations
-                      </h4>
-                      <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-2">
-                        {level.recommendations.map((rec, idx) => (
-                          <li key={idx} className="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
-                            <CheckCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                            {rec}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                      <h4 className="font-semibold text-yellow-700 dark:text-yellow-300 text-sm mb-2 flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4" />
-                        Sensitive Groups:
-                      </h4>
-                      <p className="text-sm text-yellow-600 dark:text-yellow-400">{level.sensitiveGroups}</p>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Pollutants Information */}
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Common Air Pollutants
+          {/* AQI Levels */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+              AQI Levels & Health Impact
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Learn about the different types of pollutants that affect air quality
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {pollutants.map((pollutant, index) => (
-              <Card key={index} className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800 border-0 shadow-lg animate-fade-in" style={{animationDelay: `${index * 150}ms`}}>
-                <div className="p-8">
-                  <div className="flex items-start gap-6">
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className={`w-16 h-16 bg-gradient-to-r ${pollutant.color} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                        <pollutant.icon className="h-8 w-8 text-white" />
-                      </div>
-                      <div className="text-3xl group-hover:animate-bounce">{pollutant.image}</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {aqiLevels.map((level, index) => (
+                <Card 
+                  key={index} 
+                  className={`overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 ${level.bgColor} ${level.borderColor} border-2 group animate-fade-in cursor-pointer`} 
+                  style={{animationDelay: `${index * 100}ms`}}
+                  onClick={() => setSelectedAQILevel(level)}
+                >
+                  <div className={`p-6 bg-gradient-to-r ${level.color} text-white relative overflow-hidden`}>
+                    <div className="absolute top-2 right-2 text-3xl group-hover:animate-bounce">
+                      {level.emoji}
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                        {pollutant.name}
-                      </h3>
-                      <p className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                        {pollutant.fullName}
-                      </p>
-                      <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                        {pollutant.description}
-                      </p>
-                      
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                            <Factory className="h-4 w-4" />
-                            Sources:
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {pollutant.sources.map((source, idx) => (
-                              <Badge key={idx} variant="outline" className="text-xs px-3 py-1 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
-                                {source}
-                              </Badge>
-                            ))}
+                    <h3 className="text-2xl font-bold mb-2">{level.level}</h3>
+                    <div className="flex items-center justify-between">
+                      <p className="text-lg font-semibold">AQI {level.range}</p>
+                      <Progress value={(parseInt(level.range.split('-')[0]) / 300) * 100} className="w-20 h-2 bg-white/30" />
+                    </div>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{level.description}</p>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold text-red-600 dark:text-red-400 mb-2 flex items-center gap-2">
+                          <Heart className="h-4 w-4" />
+                          Health Effects
+                        </h4>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+                          {level.healthEffects}
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4" />
+                          Recommendations
+                        </h4>
+                        <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+                          {level.recommendations.slice(0, 2).map((rec, idx) => (
+                            <li key={idx} className="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
+                              <CheckCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                              {rec}
+                            </li>
+                          ))}
+                        </ul>
+                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-2 font-medium">
+                          Click to see all recommendations
+                        </p>
+                      </div>
+
+                      <div className="p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                        <h4 className="font-semibold text-yellow-700 dark:text-yellow-300 text-sm mb-2 flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4" />
+                          Sensitive Groups:
+                        </h4>
+                        <p className="text-sm text-yellow-600 dark:text-yellow-400">{level.sensitiveGroups}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Pollutants Information */}
+          <div className="mb-16">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Common Air Pollutants
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Learn about the different types of pollutants that affect air quality
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {pollutants.map((pollutant, index) => (
+                <Card 
+                  key={index} 
+                  className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white dark:bg-gray-800 border-0 shadow-lg animate-fade-in cursor-pointer" 
+                  style={{animationDelay: `${index * 150}ms`}}
+                  onClick={() => setSelectedPollutant(pollutant)}
+                >
+                  <div className="p-8">
+                    <div className="flex items-start gap-6">
+                      <div className="flex flex-col items-center space-y-2">
+                        <div className={`w-16 h-16 bg-gradient-to-r ${pollutant.color} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                          <pollutant.icon className="h-8 w-8 text-white" />
+                        </div>
+                        <div className="text-3xl group-hover:animate-bounce">{pollutant.image}</div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                          {pollutant.name}
+                        </h3>
+                        <p className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                          {pollutant.fullName}
+                        </p>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                          {pollutant.description}
+                        </p>
+                        
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                              <Factory className="h-4 w-4" />
+                              Sources:
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                              {pollutant.sources.slice(0, 3).map((source, idx) => (
+                                <Badge key={idx} variant="outline" className="text-xs px-3 py-1 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
+                                  {source}
+                                </Badge>
+                              ))}
+                              {pollutant.sources.length > 3 && (
+                                <Badge variant="outline" className="text-xs px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                                  +{pollutant.sources.length - 3} more
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="font-semibold text-red-600 dark:text-red-400 mb-3 flex items-center gap-2">
+                              <Heart className="h-4 w-4" />
+                              Health Effects:
+                            </h4>
+                            <ul className="space-y-2">
+                              {pollutant.healthEffects.slice(0, 2).map((effect, idx) => (
+                                <li key={idx} className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+                                  <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                                  {effect}
+                                </li>
+                              ))}
+                            </ul>
+                            <p className="text-xs text-blue-600 dark:text-blue-400 mt-2 font-medium">
+                              Click to see all effects and detailed information
+                            </p>
                           </div>
                         </div>
-                        
-                        <div>
-                          <h4 className="font-semibold text-red-600 dark:text-red-400 mb-3 flex items-center gap-2">
-                            <Heart className="h-4 w-4" />
-                            Health Effects:
-                          </h4>
-                          <ul className="space-y-2">
-                            {pollutant.healthEffects.map((effect, idx) => (
-                              <li key={idx} className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
-                                <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                                {effect}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Protection Guidelines */}
-        <Card className="p-12 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-0 shadow-2xl">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-            General Protection Guidelines
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { icon: CheckCircle, title: 'Monitor Daily', desc: 'Check AQI levels before going outside', color: 'from-green-500 to-emerald-500' },
-              { icon: Heart, title: 'Protect Yourself', desc: 'Use appropriate masks when needed', color: 'from-blue-500 to-cyan-500' },
-              { icon: AlertTriangle, title: 'Stay Healthy', desc: 'Maintain good respiratory health', color: 'from-purple-500 to-pink-500' },
-              { icon: Info, title: 'Seek Help', desc: 'Consult doctors if symptoms persist', color: 'from-red-500 to-orange-500' }
-            ].map((item, index) => (
-              <div key={index} className="text-center group hover:scale-105 transition-transform duration-300 animate-fade-in" style={{animationDelay: `${index * 200}ms`}}>
-                <div className={`w-16 h-16 bg-gradient-to-r ${item.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:rotate-12 transition-transform duration-300 shadow-lg`}>
-                  <item.icon className="h-8 w-8 text-white" />
+          {/* Protection Guidelines */}
+          <Card className="p-12 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-0 shadow-2xl">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+              General Protection Guidelines
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                { icon: CheckCircle, title: 'Monitor Daily', desc: 'Check AQI levels before going outside', color: 'from-green-500 to-emerald-500' },
+                { icon: Heart, title: 'Protect Yourself', desc: 'Use appropriate masks when needed', color: 'from-blue-500 to-cyan-500' },
+                { icon: AlertTriangle, title: 'Stay Healthy', desc: 'Maintain good respiratory health', color: 'from-purple-500 to-pink-500' },
+                { icon: Info, title: 'Seek Help', desc: 'Consult doctors if symptoms persist', color: 'from-red-500 to-orange-500' }
+              ].map((item, index) => (
+                <div key={index} className="text-center group hover:scale-105 transition-transform duration-300 animate-fade-in" style={{animationDelay: `${index * 200}ms`}}>
+                  <div className={`w-16 h-16 bg-gradient-to-r ${item.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:rotate-12 transition-transform duration-300 shadow-lg`}>
+                    <item.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">{item.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">{item.title}</h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
-    </div>
+
+      {/* Zoom Modal for AQI Levels */}
+      <ZoomModal
+        isOpen={!!selectedAQILevel}
+        onClose={() => setSelectedAQILevel(null)}
+        title={selectedAQILevel ? `${selectedAQILevel.level} (AQI ${selectedAQILevel.range})` : ''}
+      >
+        {selectedAQILevel && (
+          <div className="space-y-6">
+            {/* Header */}
+            <div className={`p-6 rounded-xl bg-gradient-to-r ${selectedAQILevel.color} text-white shadow-lg`}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="text-6xl">{selectedAQILevel.emoji}</div>
+                  <div>
+                    <h3 className="text-3xl font-bold">{selectedAQILevel.level}</h3>
+                    <p className="text-xl opacity-90">AQI {selectedAQILevel.range}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <Progress value={(parseInt(selectedAQILevel.range.split('-')[0]) / 300) * 100} className="w-32 h-3 bg-white/30 mb-2" />
+                  <p className="text-sm opacity-80">Air Quality Scale</p>
+                </div>
+              </div>
+              <p className="text-lg leading-relaxed">{selectedAQILevel.description}</p>
+            </div>
+
+            {/* Health Effects */}
+            <Card className="p-6 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10">
+              <h4 className="text-xl font-bold mb-4 text-red-700 dark:text-red-400 flex items-center gap-2">
+                <Heart className="h-6 w-6" />
+                Health Effects
+              </h4>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+                {selectedAQILevel.healthEffects}
+              </p>
+            </Card>
+
+            {/* Recommendations */}
+            <Card className="p-6 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10">
+              <h4 className="text-xl font-bold mb-4 text-blue-700 dark:text-blue-400 flex items-center gap-2">
+                <CheckCircle className="h-6 w-6" />
+                Recommendations
+              </h4>
+              <ul className="space-y-3">
+                {selectedAQILevel.recommendations.map((rec, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300 text-lg">{rec}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+
+            {/* Sensitive Groups */}
+            <Card className="p-6 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/10">
+              <h4 className="text-xl font-bold mb-4 text-yellow-700 dark:text-yellow-400 flex items-center gap-2">
+                <AlertTriangle className="h-6 w-6" />
+                Sensitive Groups
+              </h4>
+              <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                {selectedAQILevel.sensitiveGroups}
+              </p>
+            </Card>
+          </div>
+        )}
+      </ZoomModal>
+
+      {/* Zoom Modal for Pollutants */}
+      <ZoomModal
+        isOpen={!!selectedPollutant}
+        onClose={() => setSelectedPollutant(null)}
+        title={selectedPollutant ? `${selectedPollutant.name} - ${selectedPollutant.fullName}` : ''}
+      >
+        {selectedPollutant && (
+          <div className="space-y-6">
+            {/* Header */}
+            <div className={`p-6 rounded-xl bg-gradient-to-r ${selectedPollutant.color} text-white shadow-lg`}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                    <selectedPollutant.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold">{selectedPollutant.name}</h3>
+                    <p className="text-lg opacity-90">{selectedPollutant.fullName}</p>
+                  </div>
+                </div>
+                <div className="text-6xl">{selectedPollutant.image}</div>
+              </div>
+              <p className="text-lg leading-relaxed">{selectedPollutant.description}</p>
+            </div>
+
+            {/* Sources */}
+            <Card className="p-6 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10">
+              <h4 className="text-xl font-bold mb-4 text-blue-700 dark:text-blue-400 flex items-center gap-2">
+                <Factory className="h-6 w-6" />
+                Common Sources
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {selectedPollutant.sources.map((source, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-1">•</span>
+                    <span className="text-gray-700 dark:text-gray-300 text-lg">{source}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Health Effects */}
+            <Card className="p-6 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10">
+              <h4 className="text-xl font-bold mb-4 text-red-700 dark:text-red-400 flex items-center gap-2">
+                <Heart className="h-6 w-6" />
+                Health Effects
+              </h4>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {selectedPollutant.healthEffects.map((effect, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <AlertTriangle className="h-5 w-5 text-red-500 mt-1 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300 text-lg">{effect}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </div>
+        )}
+      </ZoomModal>
+    </>
   );
 };
 
