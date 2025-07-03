@@ -1,7 +1,6 @@
 
 import { Thermometer, Wind, Eye, Zap, Factory, Car } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { AQIPieChart } from './AQIPieChart';
 
 interface AQIDisplayProps {
   aqiData: {
@@ -154,9 +153,6 @@ export const AQIDisplay = ({ aqiData, getAQILevel }: AQIDisplayProps) => {
           </Card>
         ))}
       </div>
-
-      {/* Pie Chart Analysis */}
-      <AQIPieChart aqiData={aqiData} />
     </div>
   );
 };
