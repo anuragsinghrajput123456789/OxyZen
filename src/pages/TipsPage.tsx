@@ -90,7 +90,7 @@ const TipsPage = () => {
   const generateAITips = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyC8fekQzgrly17DLFoZKVMpBxl-Z5NW8n8', {
+      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyBrVugq-g35-6OSMAL_YRmY8iq_j8uWfuE', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

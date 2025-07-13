@@ -14,7 +14,7 @@ interface MaskRecommendationProps {
 }
 
 // Your Gemini API key
-const GEMINI_API_KEY = 'c4be273320974f06b606241977fde51a';
+const GEMINI_API_KEY = 'AIzaSyBrVugq-g35-6OSMAL_YRmY8iq_j8uWfuE';
 
 export const MaskRecommendation = ({ aqiData, getAQILevel }: MaskRecommendationProps) => {
   const [recommendation, setRecommendation] = useState<any>(null);
