@@ -149,16 +149,40 @@ export const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
 
-      {/* Floating ChatBot Button */}
+      {/* Enhanced Floating ChatBot Button */}
       <div className="fixed bottom-6 right-6 z-50">
-        <button
-          onClick={() => setIsChatBotOpen(true)}
-          className="w-14 h-14 bg-gradient-to-br from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
-          title="Open AI Assistant"
-        >
-          <Bot className="h-6 w-6 mx-auto group-hover:scale-110 transition-transform duration-300" />
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse border-2 border-white"></div>
-        </button>
+        <div className="relative">
+          {/* Floating tooltip */}
+          <div className="absolute -top-12 -left-16 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+            <div className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap shadow-lg">
+              AI Assistant
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-100"></div>
+            </div>
+          </div>
+          
+          <button
+            onClick={() => setIsChatBotOpen(true)}
+            className="group relative w-16 h-16 bg-gradient-to-br from-blue-600 via-purple-600 to-green-500 hover:from-blue-700 hover:via-purple-700 hover:to-green-600 text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-110 animate-pulse-glow"
+            title="Open AI Assistant"
+          >
+            {/* Background glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-400 to-green-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+            
+            {/* Main icon */}
+            <div className="relative z-10 flex items-center justify-center h-full">
+              <Bot className="h-7 w-7 group-hover:scale-110 transition-transform duration-300" />
+            </div>
+            
+            {/* Pulsing indicator */}
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full animate-pulse border-2 border-white dark:border-gray-800 shadow-md">
+              <div className="absolute inset-1 bg-white/30 rounded-full animate-ping"></div>
+            </div>
+            
+            {/* Sparkle effects */}
+            <Sparkles className="absolute -top-2 -left-2 h-4 w-4 text-yellow-300 animate-pulse animation-delay-1000" />
+            <Zap className="absolute -bottom-1 -right-2 h-3 w-3 text-blue-300 animate-bounce animation-delay-2000" />
+          </button>
+        </div>
       </div>
 
       {/* Conditional ChatBot */}

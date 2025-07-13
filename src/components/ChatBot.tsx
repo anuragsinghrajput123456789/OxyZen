@@ -182,55 +182,73 @@ Keep your response informative but conversational, and always prioritize health 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in">
-      <Card className="w-full max-w-2xl h-[700px] flex flex-col bg-white dark:bg-gray-800 shadow-2xl border-0 rounded-3xl overflow-hidden">
-        {/* Enhanced Header */}
-        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-              <Bot className="h-7 w-7 text-white" />
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+      <Card className="w-full max-w-3xl h-[750px] flex flex-col bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl border border-white/20 dark:border-gray-700/30 rounded-3xl overflow-hidden animate-bounce-in">
+        {/* Enhanced Header with better typography */}
+        <div className="flex items-center justify-between p-6 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white relative overflow-hidden">
+          {/* Background pattern */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
+          <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full blur-2xl"></div>
+          
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-lg">
+              <Bot className="h-8 w-8 text-white drop-shadow-sm" />
             </div>
             <div>
-              <h3 className="text-xl font-bold">AI Air Quality Assistant</h3>
-              <p className="text-blue-100 text-sm flex items-center">
-                <Sparkles className="h-3 w-3 mr-1" />
-                Powered by Gemini AI • Voice Enabled
+              <h3 className="text-xl font-bold font-poppins tracking-tight">AI Air Quality Assistant</h3>
+              <p className="text-blue-100/90 text-sm flex items-center font-medium">
+                <Sparkles className="h-3 w-3 mr-1 animate-pulse" />
+                Powered by Gemini AI • Voice & Text Enabled
               </p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/20 rounded-xl">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onClose} 
+            className="text-white/90 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-200 relative z-10"
+          >
             <X className="h-5 w-5" />
           </Button>
         </div>
 
-        {/* Messages */}
-        <ScrollArea className="flex-1 p-6">
-          <div className="space-y-4">
+        {/* Enhanced Messages Section */}
+        <ScrollArea className="flex-1 p-6 bg-gradient-to-b from-transparent to-white/50 dark:to-gray-900/50">
+          <div className="space-y-5">
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div
-                  className={`max-w-[85%] p-4 rounded-2xl shadow-md ${
+                  className={`max-w-[85%] p-5 rounded-2xl shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] ${
                     message.role === 'user'
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
+                      ? 'bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 text-white shadow-blue-500/25 border border-blue-400/20'
+                      : 'bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 border border-gray-200/50 dark:border-gray-600/50 shadow-gray-500/10'
                   }`}
                 >
-                  <div className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</div>
-                  <div className={`text-xs mt-2 opacity-70`}>
-                    {message.timestamp.toLocaleTimeString()}
+                  <div className="text-base font-medium leading-relaxed whitespace-pre-wrap">{message.content}</div>
+                  <div className={`text-xs mt-3 flex items-center gap-1 ${
+                    message.role === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
+                  }`}>
+                    <div className="w-1 h-1 bg-current rounded-full"></div>
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
               </div>
             ))}
             {loading && (
               <div className="flex justify-start animate-fade-in">
-                <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-2xl shadow-md border border-gray-200 dark:border-gray-600">
-                  <div className="flex items-center space-x-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                    <span className="text-sm text-gray-600 dark:text-gray-300">AI is thinking...</span>
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-5 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-600/50">
+                  <div className="flex items-center space-x-3">
+                    <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                    <span className="text-base font-medium text-gray-700 dark:text-gray-300">AI is thinking...</span>
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce animation-delay-200"></div>
+                      <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce animation-delay-400"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -238,66 +256,85 @@ Keep your response informative but conversational, and always prioritize health 
           </div>
         </ScrollArea>
 
-        {/* Quick Questions */}
+        {/* Enhanced Quick Questions Section */}
         {!loading && (
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-            <div className="mb-3">
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium">💡 Quick questions to get started:</p>
-              <div className="grid grid-cols-2 gap-2">
+          <div className="p-6 border-t border-gray-200/50 dark:border-gray-700/50 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-indigo-50/50 dark:from-gray-800/50 dark:via-gray-800/30 dark:to-gray-900/50 backdrop-blur-sm">
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                  <Sparkles className="h-3 w-3 text-white" />
+                </div>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Quick questions to get started</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {quickQuestions.map((question, index) => (
                   <Button
                     key={index}
                     variant="outline"
                     size="sm"
                     onClick={() => handleQuickQuestion(question)}
-                    className="text-xs h-auto p-2 text-left rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 transition-all duration-200"
+                    className="text-sm font-medium h-auto p-4 text-left rounded-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-gray-200/60 dark:border-gray-600/60 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md hover:scale-[1.02] transition-all duration-300 group"
                   >
-                    {question}
+                    <div className="flex items-start gap-2">
+                      <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mt-2 group-hover:scale-125 transition-transform duration-200"></div>
+                      <span className="leading-relaxed">{question}</span>
+                    </div>
                   </Button>
                 ))}
               </div>
             </div>
 
-            {/* Voice Recognition Status */}
+            {/* Enhanced Voice Recognition Status */}
             {isListening && (
-              <div className="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
-                <div className="flex items-center justify-center gap-2 text-blue-600 dark:text-blue-400">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium">Listening... Speak now</span>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animation-delay-200"></div>
+              <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-indigo-900/20 rounded-2xl border border-blue-200/60 dark:border-blue-700/60 backdrop-blur-sm">
+                <div className="flex items-center justify-center gap-3 text-blue-600 dark:text-blue-400">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-200"></div>
+                    <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse animation-delay-400"></div>
+                  </div>
+                  <span className="text-base font-semibold">Listening... Speak now</span>
+                  <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               </div>
             )}
 
-            {/* Input with Voice */}
-            <div className="flex gap-2">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about air quality, masks, or health protection..."
-                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                disabled={loading || isListening}
-                className="rounded-xl"
-              />
+            {/* Enhanced Input Section */}
+            <div className="flex gap-3">
+              <div className="flex-1 relative">
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask about air quality, masks, or health protection..."
+                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  disabled={loading || isListening}
+                  className="rounded-2xl h-12 text-base font-medium bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-gray-200/60 dark:border-gray-600/60 focus:border-blue-400 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-400/20 transition-all duration-200 pr-4"
+                />
+                {input && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500 font-medium">
+                    {input.length}/500
+                  </div>
+                )}
+              </div>
               
-              {/* Voice Recognition Button */}
+              {/* Enhanced Voice Recognition Button */}
               {speechSupported && (
                 <Button
                   onClick={isListening ? stopListening : startListening}
                   disabled={loading}
                   variant="outline"
                   size="icon"
-                  className={`rounded-xl transition-all duration-200 ${
+                  className={`rounded-2xl h-12 w-12 transition-all duration-300 backdrop-blur-sm hover:scale-105 ${
                     isListening 
-                      ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30' 
-                      : 'hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700'
+                      ? 'bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:from-red-100 hover:to-pink-100 dark:hover:from-red-900/30 dark:hover:to-pink-900/30 shadow-red-400/20 shadow-lg animate-pulse' 
+                      : 'bg-white/80 dark:bg-gray-800/80 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg hover:shadow-blue-400/20'
                   }`}
                   title={isListening ? 'Stop listening' : 'Start voice input'}
                 >
                   {isListening ? (
-                    <MicOff className="h-4 w-4" />
+                    <MicOff className="h-5 w-5" />
                   ) : (
-                    <Mic className="h-4 w-4" />
+                    <Mic className="h-5 w-5" />
                   )}
                 </Button>
               )}
@@ -305,21 +342,24 @@ Keep your response informative but conversational, and always prioritize health 
               <Button 
                 onClick={sendMessage} 
                 disabled={loading || !input.trim() || isListening}
-                className="rounded-xl px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="rounded-2xl h-12 px-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 backdrop-blur-sm"
               >
                 {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <Send className="h-4 w-4" />
+                  <Send className="h-5 w-5" />
                 )}
               </Button>
             </div>
 
-            {/* Voice Support Info */}
+            {/* Enhanced Voice Support Info */}
             {!speechSupported && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-                Voice input not supported in this browser
-              </p>
+              <div className="mt-3 p-3 bg-amber-50/50 dark:bg-amber-900/10 rounded-xl border border-amber-200/50 dark:border-amber-700/30">
+                <p className="text-sm text-amber-700 dark:text-amber-400 text-center font-medium flex items-center justify-center gap-2">
+                  <Bot className="h-4 w-4" />
+                  Voice input not supported in this browser
+                </p>
+              </div>
             )}
           </div>
         )}
