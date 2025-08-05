@@ -1,9 +1,19 @@
-
-import { ReactNode, useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Shield, Menu, X, Wind, Info, Activity, Heart, Bot, Sparkles, Zap } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
-import { ChatBot } from './ChatBot';
+import { ReactNode, useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  Shield,
+  Menu,
+  X,
+  Wind,
+  Info,
+  Activity,
+  Heart,
+  Bot,
+  Sparkles,
+  Zap,
+} from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
+import { ChatBot } from "./ChatBot";
 
 interface LayoutProps {
   children: ReactNode;
@@ -12,43 +22,46 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isChatBotOpen, setIsChatBotOpen] = useState(false);
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState("light");
   const location = useLocation();
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const savedTheme = localStorage.getItem("theme");
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+      .matches
+      ? "dark"
+      : "light";
     const initialTheme = savedTheme || systemTheme;
     setTheme(initialTheme);
-    
+
     // Apply theme to document
-    if (initialTheme === 'dark') {
-      document.documentElement.classList.add('dark');
+    if (initialTheme === "dark") {
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
+    const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
+    localStorage.setItem("theme", newTheme);
+
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   };
 
   const navigation = [
-    { name: 'Home', href: '/', icon: Shield },
-    { name: 'AQI Monitor', href: '/aqi-monitor', icon: Activity },
-    { name: 'Mask Recommendation', href: '/mask-recommendation', icon: Zap },
-    { name: 'Masks', href: '/masks', icon: Wind },
-    { name: 'AQI Info', href: '/aqi-info', icon: Info },
-    { name: 'Health Tips', href: '/tips', icon: Heart },
+    { name: "Home", href: "/", icon: Shield },
+    { name: "AQI Monitor", href: "/aqi-monitor", icon: Activity },
+    { name: "Mask Recommendation", href: "/mask-recommendation", icon: Zap },
+    { name: "Masks", href: "/masks", icon: Wind },
+    { name: "AQI Info", href: "/aqi-info", icon: Info },
+    { name: "Health Tips", href: "/tips", icon: Heart },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -69,7 +82,7 @@ export const Layout = ({ children }: LayoutProps) => {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                  AirGuard AI
+                  OxyZen
                 </h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">
                   Smart Air Protection
@@ -87,8 +100,8 @@ export const Layout = ({ children }: LayoutProps) => {
                     to={item.href}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 ${
                       isActive(item.href)
-                        ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white shadow-md'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'
+                        ? "bg-gradient-to-r from-blue-500 to-green-500 text-white shadow-md"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -101,7 +114,7 @@ export const Layout = ({ children }: LayoutProps) => {
             {/* Right side actions */}
             <div className="flex items-center space-x-3">
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
-              
+
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -129,8 +142,8 @@ export const Layout = ({ children }: LayoutProps) => {
                       onClick={() => setIsMenuOpen(false)}
                       className={`flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                         isActive(item.href)
-                          ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white shadow-md'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                          ? "bg-gradient-to-r from-blue-500 to-green-500 text-white shadow-md"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                       }`}
                     >
                       <Icon className="h-4 w-4" />
@@ -145,9 +158,7 @@ export const Layout = ({ children }: LayoutProps) => {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
 
       {/* Enhanced Floating ChatBot Button */}
       <div className="fixed bottom-6 right-6 z-50">
@@ -159,7 +170,7 @@ export const Layout = ({ children }: LayoutProps) => {
               <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-100"></div>
             </div>
           </div>
-          
+
           <button
             onClick={() => setIsChatBotOpen(true)}
             className="group relative w-16 h-16 bg-gradient-to-br from-blue-600 via-purple-600 to-green-500 hover:from-blue-700 hover:via-purple-700 hover:to-green-600 text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-110 animate-pulse-glow"
@@ -167,17 +178,17 @@ export const Layout = ({ children }: LayoutProps) => {
           >
             {/* Background glow effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-400 to-green-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
-            
+
             {/* Main icon */}
             <div className="relative z-10 flex items-center justify-center h-full">
               <Bot className="h-7 w-7 group-hover:scale-110 transition-transform duration-300" />
             </div>
-            
+
             {/* Pulsing indicator */}
             <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full animate-pulse border-2 border-white dark:border-gray-800 shadow-md">
               <div className="absolute inset-1 bg-white/30 rounded-full animate-ping"></div>
             </div>
-            
+
             {/* Sparkle effects */}
             <Sparkles className="absolute -top-2 -left-2 h-4 w-4 text-yellow-300 animate-pulse animation-delay-1000" />
             <Zap className="absolute -bottom-1 -right-2 h-3 w-3 text-blue-300 animate-bounce animation-delay-2000" />
@@ -186,9 +197,7 @@ export const Layout = ({ children }: LayoutProps) => {
       </div>
 
       {/* Conditional ChatBot */}
-      {isChatBotOpen && (
-        <ChatBot onClose={() => setIsChatBotOpen(false)} />
-      )}
+      {isChatBotOpen && <ChatBot onClose={() => setIsChatBotOpen(false)} />}
 
       {/* Footer */}
       <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
@@ -203,22 +212,34 @@ export const Layout = ({ children }: LayoutProps) => {
               </span>
             </div>
             <div className="flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
-              <Link to="/aqi-info" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center space-x-1">
+              <Link
+                to="/aqi-info"
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center space-x-1"
+              >
                 <Info className="h-4 w-4" />
                 <span>About AQI</span>
               </Link>
-              <Link to="/tips" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center space-x-1">
+              <Link
+                to="/tips"
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center space-x-1"
+              >
                 <Heart className="h-4 w-4" />
                 <span>Health Tips</span>
               </Link>
-              <Link to="/masks" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center space-x-1">
+              <Link
+                to="/masks"
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center space-x-1"
+              >
                 <Wind className="h-4 w-4" />
                 <span>Masks</span>
               </Link>
             </div>
           </div>
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-500 dark:text-gray-400">
-            <p>© 2024 AirGuard AI. Protecting your health with smart air quality insights.</p>
+            <p>
+              © 2024 AirGuard AI. Protecting your health with smart air quality
+              insights.
+            </p>
           </div>
         </div>
       </footer>
